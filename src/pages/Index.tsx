@@ -1,10 +1,10 @@
 
-import { StoryViewer } from "@/components/StoryViewer";
+import { TwoPanelStoryViewer } from "@/components/TwoPanelStoryViewer";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-black">
-      <StoryViewer />
+      <TwoPanelStoryViewer />
     </div>
   );
 };

@@ -3,105 +3,123 @@ import { Story } from "@/types/story";
 
 export const sampleStories: Story[] = [
   {
-    id: "1",
-    title: "The Future of Technology",
+    id: "story-1",
+    title: "Urban Photography Journey",
     author: "Alex Chen",
-    publishedAt: "2024-01-15",
+    publishedAt: "2024-01-15T10:00:00Z",
+    thumbnail: "photo-1518770660439-4636190af475",
+    tags: ["photography", "urban", "street", "art"],
     panels: [
       {
-        id: "1-1",
+        id: "panel-1",
         type: "text",
-        title: "The Future is Here",
-        content: "Exploring how technology is reshaping our world in ways we never imagined.",
+        title: "Welcome to the City",
+        content: "Join me on a photographic journey through the heart of the metropolis, where every corner tells a story.",
+        duration: 6
       },
       {
-        id: "1-2",
+        id: "panel-2",
         type: "image",
-        title: "AI Revolution",
-        content: "Artificial Intelligence is transforming industries across the globe.",
-        media: "photo-1488590528505-98d2b5aba04b",
-      },
-      {
-        id: "1-3",
-        type: "quote",
-        content: "The best way to predict the future is to invent it.",
-        title: "Alan Kay",
-      },
-      {
-        id: "1-4",
-        type: "image",
-        title: "Connected World",
-        content: "Every device, every person, connected in an intricate web of data.",
+        title: "Morning Light",
+        content: "The city awakens as golden hour paints the buildings in warm hues.",
         media: "photo-1518770660439-4636190af475",
+        duration: 8
       },
-    ],
-  },
-  {
-    id: "2",
-    title: "Journey Through Nature",
-    author: "Maria Rodriguez",
-    publishedAt: "2024-01-14",
-    panels: [
       {
-        id: "2-1",
+        id: "panel-3",
         type: "image",
-        title: "Serene Waters",
-        content: "Finding peace in the quiet moments of nature.",
-        media: "photo-1506744038136-46273834b3fb",
+        title: "Street Life",
+        content: "Capturing the energy and movement of people navigating their daily routines.",
+        media: "photo-1461749280684-dccba630e2f6",
+        duration: 7
       },
       {
-        id: "2-2",
-        type: "text",
-        title: "Digital Detox",
-        content: "Sometimes we need to disconnect from technology to reconnect with ourselves.",
-      },
-      {
-        id: "2-3",
+        id: "panel-4",
         type: "quote",
         content: "In every walk with nature, one receives far more than they seek.",
         title: "John Muir",
+        duration: 5
       },
       {
-        id: "2-4",
+        id: "panel-5",
         type: "image",
-        title: "The Great Outdoors",
-        content: "Nature's beauty reminds us of what truly matters.",
-        media: "photo-1649972904349-6e44c42644a7",
-      },
-    ],
+        title: "Reflections",
+        content: "Architecture creates beautiful patterns when reflected in glass and water.",
+        media: "photo-1518005020951-eccb494ad742",
+        duration: 6
+      }
+    ]
   },
   {
-    id: "3",
-    title: "Creative Coding",
-    author: "David Kim",
-    publishedAt: "2024-01-13",
+    id: "story-2",
+    title: "Tech Innovation Spotlight",
+    author: "Sarah Martinez",
+    publishedAt: "2024-01-20T14:30:00Z",
+    thumbnail: "photo-1488590528505-98d2b5aba04b",
+    tags: ["technology", "innovation", "startup", "future"],
     panels: [
       {
-        id: "3-1",
-        type: "image",
-        title: "Code as Art",
-        content: "When programming becomes a creative expression.",
-        media: "photo-1461749280684-dccba630e2f6",
-      },
-      {
-        id: "3-2",
+        id: "panel-6",
         type: "text",
-        title: "Building Dreams",
-        content: "Every line of code is a step towards bringing imagination to life.",
+        title: "The Future is Here",
+        content: "Exploring breakthrough technologies that are reshaping our world and daily experiences.",
+        duration: 5
       },
       {
-        id: "3-3",
+        id: "panel-7",
         type: "image",
-        title: "Modern Workspace",
-        content: "Where creativity meets technology.",
-        media: "photo-1486312338219-ce68d2c6f44d",
+        title: "Digital Workspace",
+        content: "Modern technology enables seamless collaboration across global teams.",
+        media: "photo-1488590528505-98d2b5aba04b",
+        duration: 7
       },
       {
-        id: "3-4",
-        type: "quote",
-        content: "Code is poetry written in a language that machines can understand.",
-        title: "Anonymous Developer",
+        id: "panel-8",
+        type: "image",
+        title: "Innovation Hub",
+        content: "Where creativity meets technology to solve tomorrow's challenges.",
+        media: "photo-1581091226825-a6a2a5aee158",
+        duration: 6
       },
-    ],
+      {
+        id: "panel-9",
+        type: "text",
+        title: "Looking Forward",
+        content: "The intersection of artificial intelligence and human creativity opens unlimited possibilities.",
+        duration: 8
+      }
+    ]
   },
+  {
+    id: "story-3",
+    title: "Nature's Tranquility",
+    author: "Emma Thompson",
+    publishedAt: "2024-01-25T09:15:00Z",
+    thumbnail: "photo-1500673922987-e212871fec22",
+    tags: ["nature", "landscape", "peaceful", "meditation"],
+    panels: [
+      {
+        id: "panel-10",
+        type: "image",
+        title: "Serene Waters",
+        content: "Find peace in the gentle rhythm of nature's own meditation.",
+        media: "photo-1500673922987-e212871fec22",
+        duration: 10
+      },
+      {
+        id: "panel-11",
+        type: "quote",
+        content: "Nature does not hurry, yet everything is accomplished.",
+        title: "Lao Tzu",
+        duration: 6
+      },
+      {
+        id: "panel-12",
+        type: "text",
+        title: "Mindful Moments",
+        content: "In nature's embrace, we rediscover the rhythm of our own hearts and the clarity of our minds.",
+        duration: 7
+      }
+    ]
+  }
 ];
