@@ -52,10 +52,81 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
 
     mapInstanceRef.current.addLayer(markersRef.current);
 
+    // Add custom CSS styles to document head
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+      .story-marker {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .story-marker:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      }
+      .story-marker.selected {
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        border: 2px solid #3b82f6;
+      }
+      .marker-thumbnail {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+      .marker-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+      }
+      .marker-title {
+        font-size: 10px;
+        font-weight: 500;
+        margin-top: 2px;
+        color: #374151;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 56px;
+      }
+      .cluster-marker {
+        background: #3b82f6;
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .custom-cluster-icon {
+        background: transparent !important;
+        border: none !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+      }
+      // Clean up styles
+      if (styleEl.parentNode) {
+        styleEl.parentNode.removeChild(styleEl);
       }
     };
   }, []);
@@ -105,69 +176,6 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
   return (
     <div className="relative w-full h-full">
       <div ref={mapRef} className="w-full h-full" />
-      <style jsx>{`
-        .story-marker {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          padding: 4px;
-          text-align: center;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .story-marker:hover {
-          transform: scale(1.05);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-        .story-marker.selected {
-          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-          border: 2px solid #3b82f6;
-        }
-        .marker-thumbnail {
-          width: 50px;
-          height: 50px;
-          border-radius: 8px;
-          object-fit: cover;
-        }
-        .marker-placeholder {
-          width: 50px;
-          height: 50px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 20px;
-        }
-        .marker-title {
-          font-size: 10px;
-          font-weight: 500;
-          margin-top: 2px;
-          color: #374151;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 56px;
-        }
-        .cluster-marker {
-          background: #3b82f6;
-          color: white;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          font-size: 14px;
-        }
-        .custom-cluster-icon {
-          background: transparent !important;
-          border: none !important;
-        }
-      `}</style>
     </div>
   );
 };
