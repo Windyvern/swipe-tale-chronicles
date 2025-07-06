@@ -1,26 +1,50 @@
-
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Grid3X3, MapPin, Bookmark, Share2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Grid3X3 } from "lucide-react";
 import { StoryPanel } from "./StoryPanel";
 import { ProgressBar } from "./ProgressBar";
 import { StoryGalleryOverlay } from "./StoryGalleryOverlay";
 import { StoryMetadata } from "./StoryMetadata";
-import { sampleStories } from "@/data/sampleStories";
+import { Story } from "@/types/story";
 import { useSwipeGestures } from "@/hooks/useSwipeGestures";
 
-export const TwoPanelStoryViewer = () => {
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+interface TwoPanelStoryViewerProps {
+  initialStoryId?: string;
+  stories: Story[];
+}
+
+export const TwoPanelStoryViewer = ({ 
+  initialStoryId, 
+  stories 
+}: TwoPanelStoryViewerProps) => {
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(() => {
+    if (initialStoryId) {
+      const index = stories.findIndex(story => story.id === initialStoryId);
+      return index >= 0 ? index : 0;
+    }
+    return 0;
+  });
   const [currentPanelIndex, setCurrentPanelIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
 
-  const currentStory = sampleStories[currentStoryIndex];
+  const currentStory = stories[currentStoryIndex];
   const currentPanel = currentStory?.panels[currentPanelIndex];
+
+  // Reset panel index when story changes externally
+  useEffect(() => {
+    if (initialStoryId) {
+      const index = stories.findIndex(story => story.id === initialStoryId);
+      if (index >= 0 && index !== currentStoryIndex) {
+        setCurrentStoryIndex(index);
+        setCurrentPanelIndex(0);
+      }
+    }
+  }, [initialStoryId, stories, currentStoryIndex]);
 
   const goToNextPanel = useCallback(() => {
     if (currentPanelIndex < currentStory.panels.length - 1) {
       setCurrentPanelIndex(prev => prev + 1);
-    } else if (currentStoryIndex < sampleStories.length - 1) {
+    } else if (currentStoryIndex < stories.length - 1) {
       setCurrentStoryIndex(prev => prev + 1);
       setCurrentPanelIndex(0);
     } else {
@@ -28,16 +52,16 @@ export const TwoPanelStoryViewer = () => {
       setCurrentStoryIndex(0);
       setCurrentPanelIndex(0);
     }
-  }, [currentStoryIndex, currentPanelIndex, currentStory]);
+  }, [currentStoryIndex, currentPanelIndex, currentStory, stories.length]);
 
   const goToPreviousPanel = useCallback(() => {
     if (currentPanelIndex > 0) {
       setCurrentPanelIndex(prev => prev - 1);
     } else if (currentStoryIndex > 0) {
       setCurrentStoryIndex(prev => prev - 1);
-      setCurrentPanelIndex(sampleStories[currentStoryIndex - 1].panels.length - 1);
+      setCurrentPanelIndex(stories[currentStoryIndex - 1].panels.length - 1);
     }
-  }, [currentStoryIndex, currentPanelIndex]);
+  }, [currentStoryIndex, currentPanelIndex, stories]);
 
   const jumpToPanel = (panelIndex: number) => {
     setCurrentPanelIndex(panelIndex);
