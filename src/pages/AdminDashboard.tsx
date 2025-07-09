@@ -1,14 +1,15 @@
 
 import { useState } from 'react';
-import { Plus, Map, FileText } from 'lucide-react';
+import { Plus, Map, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArticleEditor } from '@/components/admin/ArticleEditor';
 import { ArticlesList } from '@/components/admin/ArticlesList';
-import { sampleStories } from '@/data/sampleStories';
+import { useStories } from '@/hooks/useStories';
 
 const AdminDashboard = () => {
+  const { data: stories, isLoading, error } = useStories();
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
 
@@ -26,6 +27,28 @@ const AdminDashboard = () => {
     setSelectedArticleId(null);
     setIsCreatingNew(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="animate-spin" size={24} />
+          <span>Loading admin dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl mb-2">Error loading data</h2>
+          <p className="text-gray-600">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,10 +87,24 @@ const AdminDashboard = () => {
                 </Button>
               </div>
               
-              <ArticlesList
-                articles={sampleStories}
-                onEditArticle={handleEditArticle}
-              />
+              {stories && stories.length > 0 ? (
+                <ArticlesList
+                  articles={stories}
+                  onEditArticle={handleEditArticle}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <p className="text-gray-500 mb-4">No articles found</p>
+                      <Button onClick={handleCreateNew} className="flex items-center gap-2">
+                        <Plus size={16} />
+                        Create Your First Article
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="map" className="space-y-6">

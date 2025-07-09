@@ -2,12 +2,13 @@
 import { useState } from 'react';
 import { Map } from '@/components/Map';
 import { TwoPanelStoryViewer } from '@/components/TwoPanelStoryViewer';
-import { sampleStories } from '@/data/sampleStories';
+import { useStories } from '@/hooks/useStories';
 import { Story } from '@/types/story';
-import { X, List } from 'lucide-react';
+import { X, List, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const MapView = () => {
+  const { data: stories, isLoading, error } = useStories();
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [showMobileList, setShowMobileList] = useState(false);
 
@@ -19,6 +20,39 @@ const MapView = () => {
   const handleCloseStory = () => {
     setSelectedStory(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="animate-spin" size={24} />
+          <span>Loading stories...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl mb-2">Error loading stories</h2>
+          <p className="text-gray-600">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stories || stories.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl mb-2">No stories found</h2>
+          <p className="text-gray-600">Check back later for new content</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -34,7 +68,7 @@ const MapView = () => {
             </button>
             <TwoPanelStoryViewer 
               initialStoryId={selectedStory.id}
-              stories={sampleStories}
+              stories={stories}
             />
           </div>
         ) : (
@@ -54,7 +88,7 @@ const MapView = () => {
               <div className="h-full overflow-y-auto bg-white p-4">
                 <h2 className="text-xl font-bold mb-4">Stories</h2>
                 <div className="space-y-4">
-                  {sampleStories.map((story) => (
+                  {stories.map((story) => (
                     <button
                       key={story.id}
                       onClick={() => handleStorySelect(story)}
@@ -80,7 +114,7 @@ const MapView = () => {
               </div>
             ) : (
               <Map
-                stories={sampleStories}
+                stories={stories}
                 onStorySelect={handleStorySelect}
                 selectedStoryId={selectedStory?.id}
               />
@@ -102,7 +136,7 @@ const MapView = () => {
                 <X size={20} />
               </button>
               <Map
-                stories={sampleStories}
+                stories={stories}
                 onStorySelect={handleStorySelect}
                 selectedStoryId={selectedStory.id}
               />
@@ -112,14 +146,14 @@ const MapView = () => {
             <div className="w-2/3">
               <TwoPanelStoryViewer 
                 initialStoryId={selectedStory.id}
-                stories={sampleStories}
+                stories={stories}
               />
             </div>
           </>
         ) : (
           <div className="w-full">
             <Map
-              stories={sampleStories}
+              stories={stories}
               onStorySelect={handleStorySelect}
               selectedStoryId={selectedStory?.id}
             />

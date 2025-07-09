@@ -1,11 +1,46 @@
 
 import { TwoPanelStoryViewer } from "@/components/TwoPanelStoryViewer";
-import { sampleStories } from "@/data/sampleStories";
+import { useStories } from "@/hooks/useStories";
 import { Button } from "@/components/ui/button";
-import { Map, Settings } from "lucide-react";
+import { Map, Settings, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
+  const { data: stories, isLoading, error } = useStories();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="flex items-center gap-2 text-white">
+          <Loader2 className="animate-spin" size={24} />
+          <span>Loading stories...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center text-white">
+          <h2 className="text-xl mb-2">Error loading stories</h2>
+          <p className="text-gray-400">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stories || stories.length === 0) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center text-white">
+          <h2 className="text-xl mb-2">No stories found</h2>
+          <p className="text-gray-400">Check back later for new content</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black">
       {/* Navigation Header */}
@@ -24,7 +59,7 @@ const Index = () => {
         </Link>
       </div>
 
-      <TwoPanelStoryViewer stories={sampleStories} />
+      <TwoPanelStoryViewer stories={stories} />
     </div>
   );
 };
