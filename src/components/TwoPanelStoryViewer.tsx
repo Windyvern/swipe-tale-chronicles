@@ -149,10 +149,10 @@ export const TwoPanelStoryViewer = ({
         </div>
       </div>
 
-      {/* Desktop Layout - Two Panels */}
+      {/* Desktop Layout - Three Panels */}
       <div className="hidden md:flex min-h-screen">
         {/* Left Panel - Story Viewer */}
-        <div className="w-1/2 relative overflow-hidden">
+        <div className="w-1/3 relative overflow-hidden">
           <div 
             className="relative h-screen"
             {...swipeHandlers}
@@ -213,12 +213,20 @@ export const TwoPanelStoryViewer = ({
           </div>
         </div>
 
-        {/* Right Panel - Story Metadata */}
-        <div className="w-1/2 bg-white">
+        {/* Middle Panel - Story Metadata */}
+        <div className="w-1/3 bg-white">
           <StoryMetadata 
             story={currentStory}
             currentPanel={currentPanel}
           />
+        </div>
+
+        {/* Right Panel - Additional Content */}
+        <div className="w-1/3 bg-gray-50 flex items-center justify-center">
+          <div className="text-center p-8">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Panel 3</h3>
+            <p className="text-gray-600">This is the third panel. You can add additional content here like related stories, comments, or other features.</p>
+          </div>
         </div>
       </div>
     </div>
