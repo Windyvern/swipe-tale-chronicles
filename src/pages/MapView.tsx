@@ -69,6 +69,7 @@ const MapView = () => {
             <TwoPanelStoryViewer 
               initialStoryId={selectedStory.id}
               stories={stories}
+              onClose={handleCloseStory}
             />
           </div>
         ) : (
@@ -129,12 +130,6 @@ const MapView = () => {
           <>
             {/* Map Panel */}
             <div className="w-1/3 relative">
-              <button
-                onClick={handleCloseStory}
-                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200"
-              >
-                <X size={20} />
-              </button>
               <Map
                 stories={stories}
                 onStorySelect={handleStorySelect}
@@ -142,11 +137,12 @@ const MapView = () => {
               />
             </div>
             
-            {/* Story Viewer Panel */}
+            {/* Story Viewer + Metadata Panels */}
             <div className="w-2/3">
               <TwoPanelStoryViewer 
                 initialStoryId={selectedStory.id}
                 stories={stories}
+                onClose={handleCloseStory}
               />
             </div>
           </>

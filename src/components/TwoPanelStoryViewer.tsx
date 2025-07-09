@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Grid3X3 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Grid3X3, X } from "lucide-react";
 import { StoryPanel } from "./StoryPanel";
 import { ProgressBar } from "./ProgressBar";
 import { StoryGalleryOverlay } from "./StoryGalleryOverlay";
@@ -10,11 +11,13 @@ import { useSwipeGestures } from "@/hooks/useSwipeGestures";
 interface TwoPanelStoryViewerProps {
   initialStoryId?: string;
   stories: Story[];
+  onClose?: () => void;
 }
 
 export const TwoPanelStoryViewer = ({ 
   initialStoryId, 
-  stories 
+  stories,
+  onClose 
 }: TwoPanelStoryViewerProps) => {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(() => {
     if (initialStoryId) {
@@ -79,7 +82,7 @@ export const TwoPanelStoryViewer = ({
     return () => clearTimeout(timer);
   }, [currentPanelIndex, currentStoryIndex, isAutoPlaying, goToNextPanel, showGallery]);
 
-  // Swipe gesture support for left panel only
+  // Swipe gesture support for story panel only
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: goToNextPanel,
     onSwipeRight: goToPreviousPanel,
@@ -149,10 +152,10 @@ export const TwoPanelStoryViewer = ({
         </div>
       </div>
 
-      {/* Desktop Layout - Three Panels */}
+      {/* Desktop Layout - Story Viewer and Metadata Only */}
       <div className="hidden md:flex min-h-screen">
-        {/* Left Panel - Story Viewer */}
-        <div className="w-1/3 relative overflow-hidden">
+        {/* Story Viewer Panel */}
+        <div className="w-1/2 relative overflow-hidden">
           <div 
             className="relative h-screen"
             {...swipeHandlers}
@@ -213,20 +216,22 @@ export const TwoPanelStoryViewer = ({
           </div>
         </div>
 
-        {/* Middle Panel - Story Metadata */}
-        <div className="w-1/3 bg-white">
+        {/* Metadata Panel with Close Button */}
+        <div className="w-1/2 bg-white relative">
+          {/* Close Button */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+            >
+              <X size={20} />
+            </button>
+          )}
+          
           <StoryMetadata 
             story={currentStory}
             currentPanel={currentPanel}
           />
-        </div>
-
-        {/* Right Panel - Additional Content */}
-        <div className="w-1/3 bg-gray-50 flex items-center justify-center">
-          <div className="text-center p-8">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Panel 3</h3>
-            <p className="text-gray-600">This is the third panel. You can add additional content here like related stories, comments, or other features.</p>
-          </div>
         </div>
       </div>
     </div>
