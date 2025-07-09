@@ -1,8 +1,8 @@
-
 import { MapPin, Bookmark, Share2, Tag } from "lucide-react";
 import { Story, StoryPanelData } from "@/types/story";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StoryHighlights } from "./StoryHighlights";
 
 interface StoryMetadataProps {
   story: Story;
@@ -25,6 +25,39 @@ export const StoryMetadata = ({ story, currentPanel }: StoryMetadataProps) => {
         url: window.location.href,
       });
     }
+  };
+
+  // Mock highlights data - in real app, this would come from the story data
+  const mockHighlights = [
+    {
+      id: '1',
+      title: 'Appetizers',
+      thumbnail: 'photo-1565299624946-b28f40a0ca4b',
+      panelIds: ['panel1', 'panel2']
+    },
+    {
+      id: '2',
+      title: 'Main Course',
+      thumbnail: 'photo-1567620905732-2d1ec7ab7445',
+      panelIds: ['panel3', 'panel4']
+    },
+    {
+      id: '3',
+      title: 'Desserts',
+      thumbnail: 'photo-1551024506-0bccd828d307',
+      panelIds: ['panel5', 'panel6']
+    },
+    {
+      id: '4',
+      title: 'Ambiance',
+      thumbnail: 'photo-1514933651103-005eec06c04b',
+      panelIds: ['panel7', 'panel8']
+    }
+  ];
+
+  const handleHighlightSelect = (highlight: any) => {
+    console.log("Selected highlight:", highlight);
+    // TODO: Filter story panels based on selected highlight
   };
 
   return (
@@ -66,6 +99,12 @@ export const StoryMetadata = ({ story, currentPanel }: StoryMetadataProps) => {
           </div>
         </div>
       )}
+
+      {/* Highlights Section */}
+      <StoryHighlights
+        highlights={mockHighlights}
+        onHighlightSelect={handleHighlightSelect}
+      />
 
       {/* Current Panel Info */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">

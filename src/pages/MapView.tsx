@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Map } from '@/components/Map';
 import { TwoPanelStoryViewer } from '@/components/TwoPanelStoryViewer';
+import { RestaurantCards } from '@/components/RestaurantCards';
 import { useStories } from '@/hooks/useStories';
 import { Story } from '@/types/story';
 import { X, List, Loader2 } from 'lucide-react';
@@ -124,12 +125,12 @@ const MapView = () => {
         )}
       </div>
 
-      {/* Desktop Layout */}
+      {/* Desktop Layout - Three or Four Panels */}
       <div className="hidden md:flex h-screen">
         {selectedStory ? (
           <>
-            {/* Map Panel */}
-            <div className="w-1/3 relative">
+            {/* Map Panel - Fixed width when story is selected */}
+            <div className="w-1/4 relative">
               <Map
                 stories={stories}
                 onStorySelect={handleStorySelect}
@@ -137,12 +138,13 @@ const MapView = () => {
               />
             </div>
             
-            {/* Story Viewer + Metadata Panels */}
-            <div className="w-2/3">
+            {/* Story Viewer + Metadata + Restaurant Cards Panels */}
+            <div className="w-3/4">
               <TwoPanelStoryViewer 
                 initialStoryId={selectedStory.id}
                 stories={stories}
                 onClose={handleCloseStory}
+                rightPanelContent={<RestaurantCards />}
               />
             </div>
           </>

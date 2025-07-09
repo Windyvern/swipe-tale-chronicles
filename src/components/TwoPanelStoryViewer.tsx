@@ -1,6 +1,5 @@
-
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Grid3X3, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Grid3X3, X, ChevronDown, ChevronUp } from "lucide-react";
 import { StoryPanel } from "./StoryPanel";
 import { ProgressBar } from "./ProgressBar";
 import { StoryGalleryOverlay } from "./StoryGalleryOverlay";
@@ -12,12 +11,14 @@ interface TwoPanelStoryViewerProps {
   initialStoryId?: string;
   stories: Story[];
   onClose?: () => void;
+  rightPanelContent?: React.ReactNode;
 }
 
 export const TwoPanelStoryViewer = ({ 
   initialStoryId, 
   stories,
-  onClose 
+  onClose,
+  rightPanelContent
 }: TwoPanelStoryViewerProps) => {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(() => {
     if (initialStoryId) {
@@ -29,6 +30,7 @@ export const TwoPanelStoryViewer = ({
   const [currentPanelIndex, setCurrentPanelIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
 
   const currentStory = stories[currentStoryIndex];
   const currentPanel = currentStory?.panels[currentPanelIndex];
@@ -152,10 +154,10 @@ export const TwoPanelStoryViewer = ({
         </div>
       </div>
 
-      {/* Desktop Layout - Story Viewer and Metadata Only */}
+      {/* Desktop Layout - Four Panels */}
       <div className="hidden md:flex min-h-screen">
         {/* Story Viewer Panel */}
-        <div className="w-1/2 relative overflow-hidden">
+        <div className="w-1/3 relative overflow-hidden">
           <div 
             className="relative h-screen"
             {...swipeHandlers}
@@ -217,7 +219,7 @@ export const TwoPanelStoryViewer = ({
         </div>
 
         {/* Metadata Panel with Close Button */}
-        <div className="w-1/2 bg-white relative">
+        <div className="w-1/3 bg-white relative">
           {/* Close Button */}
           {onClose && (
             <button
@@ -232,6 +234,28 @@ export const TwoPanelStoryViewer = ({
             story={currentStory}
             currentPanel={currentPanel}
           />
+        </div>
+
+        {/* Right Panel - Collapsible */}
+        <div className={`${isRightPanelCollapsed ? 'w-0' : 'w-1/3'} bg-white relative transition-all duration-300 overflow-hidden`}>
+          {/* Collapse/Expand Button */}
+          <button
+            onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
+            className="absolute top-4 left-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+          >
+            {isRightPanelCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+          </button>
+
+          {!isRightPanelCollapsed && (
+            <div className="h-full p-6 pt-16">
+              {rightPanelContent || (
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold text-gray-700 mb-4">Related Places</h3>
+                  <p className="text-gray-600">Content can be customized here</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
