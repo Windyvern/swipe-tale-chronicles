@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Grid3X3, X, ChevronDown, ChevronUp } from "lucide-react";
 import { StoryPanel } from "./StoryPanel";
@@ -31,9 +32,39 @@ export const TwoPanelStoryViewer = ({
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [showGallery, setShowGallery] = useState(false);
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+  const [showMetadataPanel, setShowMetadataPanel] = useState(false);
+  const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
   const currentStory = stories[currentStoryIndex];
   const currentPanel = currentStory?.panels[currentPanelIndex];
+
+  // Mock highlights data - in real app, this would come from the story data
+  const mockHighlights = [
+    {
+      id: '1',
+      title: 'Appetizers',
+      thumbnail: 'photo-1565299624946-b28f40a0ca4b',
+      panelIds: ['panel1', 'panel2']
+    },
+    {
+      id: '2',
+      title: 'Main Course',
+      thumbnail: 'photo-1567620905732-2d1ec7ab7445',
+      panelIds: ['panel3', 'panel4']
+    },
+    {
+      id: '3',
+      title: 'Desserts',
+      thumbnail: 'photo-1551024506-0bccd828d307',
+      panelIds: ['panel5', 'panel6']
+    },
+    {
+      id: '4',
+      title: 'Ambiance',
+      thumbnail: 'photo-1514933651103-005eec06c04b',
+      panelIds: ['panel7', 'panel8']
+    }
+  ];
 
   // Reset panel index when story changes externally
   useEffect(() => {
@@ -68,9 +99,32 @@ export const TwoPanelStoryViewer = ({
     }
   }, [currentStoryIndex, currentPanelIndex, stories]);
 
+  const goToNextHighlight = useCallback(() => {
+    const currentIndex = mockHighlights.findIndex(h => h.id === selectedHighlightId);
+    if (currentIndex < mockHighlights.length - 1) {
+      setSelectedHighlightId(mockHighlights[currentIndex + 1].id);
+    }
+  }, [selectedHighlightId, mockHighlights]);
+
+  const goToPreviousHighlight = useCallback(() => {
+    const currentIndex = mockHighlights.findIndex(h => h.id === selectedHighlightId);
+    if (currentIndex > 0) {
+      setSelectedHighlightId(mockHighlights[currentIndex - 1].id);
+    } else {
+      // Go back to main story viewer
+      setSelectedHighlightId(null);
+    }
+  }, [selectedHighlightId, mockHighlights]);
+
   const jumpToPanel = (panelIndex: number) => {
     setCurrentPanelIndex(panelIndex);
     setShowGallery(false);
+  };
+
+  const handleHighlightSelect = (highlight: any) => {
+    console.log("Selected highlight:", highlight);
+    setSelectedHighlightId(highlight.id);
+    setShowMetadataPanel(false);
   };
 
   // Auto-advance timer
@@ -84,8 +138,40 @@ export const TwoPanelStoryViewer = ({
     return () => clearTimeout(timer);
   }, [currentPanelIndex, currentStoryIndex, isAutoPlaying, goToNextPanel, showGallery]);
 
-  // Swipe gesture support for story panel only
-  const swipeHandlers = useSwipeGestures({
+  // Mobile swipe gesture support
+  const mobileSwipeHandlers = useSwipeGestures({
+    onSwipeDown: () => {
+      if (!showMetadataPanel && !selectedHighlightId) {
+        setShowMetadataPanel(true);
+      }
+    },
+    onSwipeUp: () => {
+      if (showMetadataPanel) {
+        setShowMetadataPanel(false);
+      } else if (!selectedHighlightId && onClose) {
+        onClose();
+      }
+    },
+    onSwipeLeft: () => {
+      if (selectedHighlightId) {
+        goToPreviousHighlight();
+      } else {
+        goToPreviousPanel();
+      }
+    },
+    onSwipeRight: () => {
+      if (selectedHighlightId) {
+        goToNextHighlight();
+      } else if (!selectedHighlightId && mockHighlights.length > 0) {
+        setSelectedHighlightId(mockHighlights[0].id);
+      } else {
+        goToNextPanel();
+      }
+    },
+  });
+
+  // Desktop swipe gesture support for story panel only
+  const desktopSwipeHandlers = useSwipeGestures({
     onSwipeLeft: goToNextPanel,
     onSwipeRight: goToPreviousPanel,
   });
@@ -108,11 +194,11 @@ export const TwoPanelStoryViewer = ({
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Mobile Layout - Single Panel */}
+      {/* Mobile Layout - Single Panel with sliding metadata */}
       <div className="md:hidden">
         <div 
           className="relative min-h-screen overflow-hidden"
-          {...swipeHandlers}
+          {...mobileSwipeHandlers}
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
@@ -142,6 +228,31 @@ export const TwoPanelStoryViewer = ({
             <StoryPanel panel={currentPanel} />
           </div>
 
+          {/* Sliding Metadata Panel */}
+          <div 
+            className={`absolute bottom-0 left-0 right-0 bg-white transition-transform duration-300 ease-out z-40 ${
+              showMetadataPanel ? 'transform translate-y-0' : 'transform translate-y-full'
+            }`}
+            style={{ height: '70vh' }}
+          >
+            <div className="p-4 h-full overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Story Details</h2>
+                <button
+                  onClick={() => setShowMetadataPanel(false)}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                >
+                  <ChevronDown size={20} />
+                </button>
+              </div>
+              <StoryMetadata 
+                story={currentStory}
+                currentPanel={currentPanel}
+                onHighlightSelect={handleHighlightSelect}
+              />
+            </div>
+          </div>
+
           {/* Story Gallery Overlay */}
           {showGallery && (
             <StoryGalleryOverlay
@@ -160,7 +271,7 @@ export const TwoPanelStoryViewer = ({
         <div className="w-1/3 relative overflow-hidden">
           <div 
             className="relative h-screen"
-            {...swipeHandlers}
+            {...desktopSwipeHandlers}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
           >
@@ -233,6 +344,7 @@ export const TwoPanelStoryViewer = ({
           <StoryMetadata 
             story={currentStory}
             currentPanel={currentPanel}
+            onHighlightSelect={handleHighlightSelect}
           />
         </div>
 
@@ -257,6 +369,18 @@ export const TwoPanelStoryViewer = ({
             </div>
           )}
         </div>
+
+        {/* Reopen Button - appears when right panel is collapsed */}
+        {isRightPanelCollapsed && (
+          <div className="absolute top-4 right-4 z-20">
+            <button
+              onClick={() => setIsRightPanelCollapsed(false)}
+              className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200"
+            >
+              <ChevronLeft size={20} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

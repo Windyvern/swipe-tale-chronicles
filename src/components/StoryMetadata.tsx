@@ -1,3 +1,4 @@
+
 import { MapPin, Bookmark, Share2, Tag } from "lucide-react";
 import { Story, StoryPanelData } from "@/types/story";
 import { Badge } from "@/components/ui/badge";
@@ -7,9 +8,10 @@ import { StoryHighlights } from "./StoryHighlights";
 interface StoryMetadataProps {
   story: Story;
   currentPanel: StoryPanelData;
+  onHighlightSelect?: (highlight: any) => void;
 }
 
-export const StoryMetadata = ({ story, currentPanel }: StoryMetadataProps) => {
+export const StoryMetadata = ({ story, currentPanel, onHighlightSelect }: StoryMetadataProps) => {
   const handleSave = () => {
     console.log("Save story:", story.id);
     // TODO: Implement save functionality
@@ -55,9 +57,11 @@ export const StoryMetadata = ({ story, currentPanel }: StoryMetadataProps) => {
     }
   ];
 
-  const handleHighlightSelect = (highlight: any) => {
+  const handleHighlightSelectInternal = (highlight: any) => {
     console.log("Selected highlight:", highlight);
-    // TODO: Filter story panels based on selected highlight
+    if (onHighlightSelect) {
+      onHighlightSelect(highlight);
+    }
   };
 
   return (
@@ -103,7 +107,7 @@ export const StoryMetadata = ({ story, currentPanel }: StoryMetadataProps) => {
       {/* Highlights Section */}
       <StoryHighlights
         highlights={mockHighlights}
-        onHighlightSelect={handleHighlightSelect}
+        onHighlightSelect={handleHighlightSelectInternal}
       />
 
       {/* Current Panel Info */}
