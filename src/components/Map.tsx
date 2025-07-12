@@ -42,10 +42,26 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
       maxClusterRadius: 50,
       iconCreateFunction: (cluster) => {
         const count = cluster.getChildCount();
+        const markers = cluster.getAllChildMarkers();
+        const latestMarker = markers[0]; // Get the first marker
+        const thumbnailUrl = (latestMarker as any).thumbnailUrl || null;
+        
         return L.divIcon({
-          html: `<div class="cluster-marker">${count}</div>`,
+          html: `
+            <div class="marker-container">
+              <div class="cluster-marker">
+                ${thumbnailUrl 
+                  ? `<img src="${thumbnailUrl}" alt="Cluster" class="cluster-thumbnail" />` 
+                  : `<div class="marker-placeholder">+</div>`
+                }
+                <div class="cluster-count">${count}</div>
+              </div>
+              <span class="arrow"></span>
+            </div>
+          `,
           className: 'custom-cluster-icon',
-          iconSize: L.point(40, 40)
+          iconSize: L.point(96, 190),
+          iconAnchor: [48, 190]
         });
       }
     });
@@ -55,64 +71,119 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
     // Add custom CSS styles to document head
     const styleEl = document.createElement('style');
     styleEl.textContent = `
-      .story-marker {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        padding: 4px;
-        text-align: center;
+      .marker-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .marker-frame {
+        display: inline-block;
+        background: #f0f0f0;
+        border: 2px solid #fff;
+        border-radius: 15px;
+        box-sizing: border-box;
+        padding: 5px;
+        width: 96px;
+        height: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         cursor: pointer;
         transition: all 0.2s ease;
       }
-      .story-marker:hover {
+      .marker-frame:hover {
         transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       }
-      .story-marker.selected {
+      .marker-frame.selected {
         box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         border: 2px solid #3b82f6;
       }
-      .marker-thumbnail {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
+      .marker-frame img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
+        border-radius: 10px;
       }
       .marker-placeholder {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-weight: bold;
-        font-size: 20px;
+        font-size: 24px;
       }
-      .marker-title {
-        font-size: 10px;
-        font-weight: 500;
-        margin-top: 2px;
-        color: #374151;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 56px;
+      .arrow {
+        width: 0;
+        height: 0;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-top: 20px solid #fff;
+        margin-top: -2px;
+        position: relative;
+      }
+      .arrow::before {
+        content: '';
+        position: absolute;
+        top: -23px;
+        left: -10px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 18px solid #f0f0f0;
       }
       .cluster-marker {
+        display: inline-block;
+        background: none;
+        border: 2px solid #fff;
+        border-radius: 15px;
+        box-sizing: border-box;
+        background-color: #f0f0f0;
+        padding: 5px;
+        width: 96px;
+        height: 170px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+      .cluster-count {
+        position: absolute;
+        top: 5px;
+        right: 5px;
         background: #3b82f6;
         color: white;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
         font-size: 14px;
+        z-index: 1;
+      }
+      .cluster-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
       }
       .custom-cluster-icon {
+        background: transparent !important;
+        border: none !important;
+      }
+      .custom-story-marker {
         background: transparent !important;
         border: none !important;
       }
@@ -150,20 +221,25 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
 
       const markerIcon = L.divIcon({
         html: `
-          <div class="story-marker ${isSelected ? 'selected' : ''}" data-story-id="${story.id}">
-            ${thumbnailUrl 
-              ? `<img src="${thumbnailUrl}" alt="${story.title}" class="marker-thumbnail" />` 
-              : `<div class="marker-placeholder">${story.title[0]}</div>`
-            }
-            <div class="marker-title">${story.title}</div>
+          <div class="marker-container">
+            <div class="marker-frame ${isSelected ? 'selected' : ''}" data-story-id="${story.id}">
+              ${thumbnailUrl 
+                ? `<img src="${thumbnailUrl}" alt="${story.title}" />` 
+                : `<div class="marker-placeholder">${story.title[0]}</div>`
+              }
+            </div>
+            <span class="arrow"></span>
           </div>
         `,
         className: 'custom-story-marker',
-        iconSize: [60, 80],
-        iconAnchor: [30, 80]
+        iconSize: [96, 190],
+        iconAnchor: [48, 190]
       });
 
       const marker = L.marker([story.geo.lat, story.geo.lng], { icon: markerIcon });
+      
+      // Store thumbnail URL for cluster use
+      (marker as any).thumbnailUrl = thumbnailUrl;
       
       marker.on('click', () => {
         onStorySelect(story);
@@ -172,6 +248,15 @@ export const Map = ({ stories, onStorySelect, selectedStoryId }: MapProps) => {
       markersRef.current.addLayer(marker);
     });
   }, [stories, onStorySelect, selectedStoryId]);
+
+  // Force map to resize and re-center when container size changes
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 300); // Wait for transition to complete
+    }
+  }, []);
 
   return (
     <div className="relative w-full h-full">

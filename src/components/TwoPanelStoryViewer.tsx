@@ -140,12 +140,12 @@ export const TwoPanelStoryViewer = ({
 
   // Mobile swipe gesture support
   const mobileSwipeHandlers = useSwipeGestures({
-    onSwipeDown: () => {
+    onSwipeUp: () => {
       if (!showMetadataPanel && !selectedHighlightId) {
         setShowMetadataPanel(true);
       }
     },
-    onSwipeUp: () => {
+    onSwipeDown: () => {
       if (showMetadataPanel) {
         setShowMetadataPanel(false);
       } else if (!selectedHighlightId && onClose) {
@@ -349,16 +349,17 @@ export const TwoPanelStoryViewer = ({
         </div>
 
         {/* Right Panel - Collapsible */}
-        <div className={`${isRightPanelCollapsed ? 'w-0' : 'w-1/3'} bg-white relative transition-all duration-300 overflow-hidden`}>
-          {/* Collapse/Expand Button */}
-          <button
-            onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
-            className="absolute top-4 left-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
-          >
-            {isRightPanelCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-          </button>
+        <div className={`w-1/3 bg-white relative transition-all duration-300 overflow-hidden`}>
+          {/* Panel Content or White Background */}
+          <div className={`h-full transition-transform duration-300 ${isRightPanelCollapsed ? 'transform translate-x-full' : 'transform translate-x-0'}`}>
+            {/* Collapse Button */}
+            <button
+              onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+            >
+              <ChevronRight size={20} />
+            </button>
 
-          {!isRightPanelCollapsed && (
             <div className="h-full p-6 pt-16">
               {rightPanelContent || (
                 <div className="text-center">
@@ -367,6 +368,11 @@ export const TwoPanelStoryViewer = ({
                 </div>
               )}
             </div>
+          </div>
+          
+          {/* White background when collapsed */}
+          {isRightPanelCollapsed && (
+            <div className="absolute inset-0 bg-white" />
           )}
         </div>
 

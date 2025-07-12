@@ -131,11 +131,13 @@ const MapView = () => {
           <>
             {/* Map Panel - Fixed width when story is selected */}
             <div className="w-1/4 relative">
-              <Map
-                stories={stories}
-                onStorySelect={handleStorySelect}
-                selectedStoryId={selectedStory.id}
-              />
+              <div className="w-full h-full">
+                <Map
+                  stories={stories}
+                  onStorySelect={handleStorySelect}
+                  selectedStoryId={selectedStory.id}
+                />
+              </div>
             </div>
             
             {/* Story Viewer + Metadata + Restaurant Cards Panels */}
