@@ -176,6 +176,21 @@ export const TwoPanelStoryViewer = ({
     onSwipeRight: goToPreviousPanel,
   });
 
+  // Calculate responsive panel visibility based on window aspect ratio
+  const [windowAspectRatio, setWindowAspectRatio] = useState(window.innerWidth / window.innerHeight);
+  
+  useEffect(() => {
+    const updateAspectRatio = () => {
+      setWindowAspectRatio(window.innerWidth / window.innerHeight);
+    };
+    
+    window.addEventListener('resize', updateAspectRatio);
+    return () => window.removeEventListener('resize', updateAspectRatio);
+  }, []);
+
+  const shouldShowRightPanel = windowAspectRatio >= 16/9; // Show only if aspect ratio is 16:9 or wider
+  const shouldShowMetadataPanel = windowAspectRatio >= 4/3; // Show only if aspect ratio is 4:3 or wider
+
   const handlePanelClick = (event: React.MouseEvent) => {
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const clickX = event.clientX - rect.left;
@@ -265,21 +280,20 @@ export const TwoPanelStoryViewer = ({
         </div>
       </div>
 
-      {/* Desktop Layout - Four Panels */}
+      {/* Desktop Layout - Responsive Panels */}
       <div className="hidden md:flex min-h-screen">
-        {/* Story Viewer Panel - 9:16 aspect ratio */}
+        {/* Story Viewer Panel - Always 9:16 aspect ratio */}
         <div 
-          className="flex justify-center items-center bg-black"
+          className="flex justify-center items-center bg-black flex-shrink-0"
           style={{ 
-            width: `${Math.min(50, 100 * (9/16) * (window.innerHeight / window.innerWidth))}%`,
-            minWidth: '300px'
+            width: `${Math.min(56.25, 100 * (9/16) / windowAspectRatio)}vh`,
+            height: '100vh'
           }}
         >
           <div 
-            className="relative bg-black"
+            className="relative bg-black w-full"
             style={{ 
               aspectRatio: '9/16',
-              width: '100%',
               height: '100vh'
             }}
             {...desktopSwipeHandlers}
@@ -340,41 +354,36 @@ export const TwoPanelStoryViewer = ({
           </div>
         </div>
 
-        {/* Metadata Panel with Close Button */}
-        <div className={`bg-white relative transition-all duration-300 ${
-          isRightPanelCollapsed ? 'flex-1' : 'w-1/3'
-        }`}>
-          {/* Close Button */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
-            >
-              <X size={20} />
-            </button>
-          )}
-          
-          <StoryMetadata 
-            story={currentStory}
-            currentPanel={currentPanel}
-            onHighlightSelect={handleHighlightSelect}
-          />
-        </div>
+        {/* Metadata Panel - Hide if window too narrow */}
+        {shouldShowMetadataPanel && (
+          <div className="bg-white relative flex-1 max-w-md">
+            {/* Close Button */}
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+              >
+                <X size={20} />
+              </button>
+            )}
+            
+            <StoryMetadata 
+              story={currentStory}
+              currentPanel={currentPanel}
+              onHighlightSelect={handleHighlightSelect}
+            />
+          </div>
+        )}
 
-        {/* Right Panel - Collapsible */}
-        <div className={`bg-white relative transition-all duration-300 overflow-hidden ${
-          isRightPanelCollapsed ? 'w-12' : 'w-1/3'
-        }`}>
-          {/* Panel Content */}
-          <div className={`h-full transition-transform duration-300 ${
-            isRightPanelCollapsed ? 'transform -translate-x-full' : 'transform translate-x-0'
-          }`}>
+        {/* Right Panel - Show only if window is wide enough */}
+        {shouldShowRightPanel && !isRightPanelCollapsed && (
+          <div className="bg-white relative flex-1 max-w-md border-l">
             {/* Collapse Button */}
             <button
-              onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+              onClick={() => setIsRightPanelCollapsed(true)}
+              className="absolute top-4 left-4 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
             >
-              <ChevronRight size={20} />
+              <ChevronLeft size={20} />
             </button>
 
             <div className="h-full p-6 pt-16">
@@ -386,16 +395,16 @@ export const TwoPanelStoryViewer = ({
               )}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Reopen Button - appears when right panel is collapsed */}
-        {isRightPanelCollapsed && (
+        {/* Reopen Button for Right Panel */}
+        {shouldShowRightPanel && isRightPanelCollapsed && (
           <div className="absolute top-4 right-4 z-20">
             <button
               onClick={() => setIsRightPanelCollapsed(false)}
               className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-all duration-200"
             >
-              <ChevronLeft size={20} />
+              <ChevronRight size={20} />
             </button>
           </div>
         )}

@@ -125,23 +125,40 @@ const MapView = () => {
         )}
       </div>
 
-      {/* Desktop Layout - Three or Four Panels */}
+      {/* Desktop Layout - Responsive based on window ratio */}
       <div className="hidden md:flex h-screen">
-        {selectedStory ? (
+        {/* Check window aspect ratio for responsive behavior */}
+        {((window.innerWidth / window.innerHeight) < 0.75) ? (
+          /* Mobile-like view for very narrow windows */
+          selectedStory ? (
+            <TwoPanelStoryViewer 
+              initialStoryId={selectedStory.id}
+              stories={stories}
+              onClose={handleCloseStory}
+              rightPanelContent={<RestaurantCards />}
+            />
+          ) : (
+            <Map
+              stories={stories}
+              onStorySelect={handleStorySelect}
+              selectedStoryId={selectedStory?.id}
+            />
+          )
+        ) : selectedStory ? (
           <>
-            {/* Map Panel - Fixed width when story is selected */}
-            <div className="w-1/4 relative">
-              <div className="w-full h-full">
+            {/* Show map only if window ratio allows */}
+            {(window.innerWidth / window.innerHeight) >= (4/3) && (
+              <div className="flex-shrink-0" style={{ width: 'calc(100vw - 56.25vh - 32rem)' }}>
                 <Map
                   stories={stories}
                   onStorySelect={handleStorySelect}
                   selectedStoryId={selectedStory.id}
                 />
               </div>
-            </div>
+            )}
             
-            {/* Story Viewer + Metadata + Restaurant Cards Panels */}
-            <div className="w-3/4">
+            {/* Story Viewer + Panels */}
+            <div className="flex-1">
               <TwoPanelStoryViewer 
                 initialStoryId={selectedStory.id}
                 stories={stories}
