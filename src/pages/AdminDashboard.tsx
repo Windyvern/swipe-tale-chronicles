@@ -1,135 +1,74 @@
 
-import { useState } from 'react';
-import { Plus, Map, FileText, Loader2 } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArticleEditor } from '@/components/admin/ArticleEditor';
-import { ArticlesList } from '@/components/admin/ArticlesList';
-import { useStories } from '@/hooks/useStories';
 
 const AdminDashboard = () => {
-  const { data: stories, isLoading, error } = useStories();
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
-
-  const handleEditArticle = (articleId: string) => {
-    setSelectedArticleId(articleId);
-    setIsCreatingNew(false);
-  };
-
-  const handleCreateNew = () => {
-    setSelectedArticleId(null);
-    setIsCreatingNew(true);
-  };
-
-  const handleBackToList = () => {
-    setSelectedArticleId(null);
-    setIsCreatingNew(false);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Loader2 className="animate-spin" size={24} />
-          <span>Loading admin dashboard...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl mb-2">Error loading data</h2>
-          <p className="text-gray-600">Please try refreshing the page</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage your story articles and map settings</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Management</h1>
+          <p className="text-gray-600">Manage your stories and content through Strapi CMS</p>
         </div>
 
-        {/* Main Content */}
-        {selectedArticleId || isCreatingNew ? (
-          <ArticleEditor
-            articleId={selectedArticleId}
-            onBack={handleBackToList}
-          />
-        ) : (
-          <Tabs defaultValue="articles" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <TabsTrigger value="articles" className="flex items-center gap-2">
-                <FileText size={16} />
-                Articles
-              </TabsTrigger>
-              <TabsTrigger value="map" className="flex items-center gap-2">
-                <Map size={16} />
-                Map Settings
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="articles" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold text-gray-900">Articles</h2>
-                <Button onClick={handleCreateNew} className="flex items-center gap-2">
-                  <Plus size={16} />
-                  New Article
-                </Button>
+        {/* Strapi Dashboard Link */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ExternalLink size={20} />
+              Strapi CMS Dashboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Access your Strapi dashboard to create and manage stories, upload media, and configure content.
+              </p>
+              <Button 
+                onClick={() => window.open('http://localhost:1337/admin', '_blank')}
+                className="flex items-center gap-2"
+              >
+                <ExternalLink size={16} />
+                Open Strapi Dashboard
+              </Button>
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-2">Setup Instructions:</h3>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+                  <li>Install Strapi: <code className="bg-blue-100 px-1 rounded">npx create-strapi-app@latest my-strapi-project</code></li>
+                  <li>Configure the database connection to match your current schema</li>
+                  <li>Create content types for Stories and Story Panels</li>
+                  <li>Update the URL above to match your Strapi instance</li>
+                </ol>
               </div>
-              
-              {stories && stories.length > 0 ? (
-                <ArticlesList
-                  articles={stories}
-                  onEditArticle={handleEditArticle}
-                />
-              ) : (
-                <Card>
-                  <CardContent className="flex items-center justify-center py-12">
-                    <div className="text-center">
-                      <p className="text-gray-500 mb-4">No articles found</p>
-                      <Button onClick={handleCreateNew} className="flex items-center gap-2">
-                        <Plus size={16} />
-                        Create Your First Article
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+            </div>
+          </CardContent>
+        </Card>
 
-            <TabsContent value="map" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Map Configuration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="text-sm text-gray-600">
-                      <p>Map settings and configuration options will be available here.</p>
-                      <p className="mt-2">Features coming soon:</p>
-                      <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>Default map center and zoom level</li>
-                        <li>Marker clustering settings</li>
-                        <li>Custom map styles</li>
-                        <li>Geocoding API configuration</li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        )}
+        {/* Database Schema Info */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Database Schema</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Your current database is already compatible with Strapi. The existing tables (stories, story_panels) 
+              follow Strapi conventions and can be easily integrated.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-3 bg-gray-50 rounded">
+                <h4 className="font-medium">Stories Table</h4>
+                <p className="text-sm text-gray-600">Contains story metadata, location, and publishing info</p>
+              </div>
+              <div className="p-3 bg-gray-50 rounded">
+                <h4 className="font-medium">Story Panels Table</h4>
+                <p className="text-sm text-gray-600">Contains individual story panels with content and media</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

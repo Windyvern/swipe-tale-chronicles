@@ -267,10 +267,21 @@ export const TwoPanelStoryViewer = ({
 
       {/* Desktop Layout - Four Panels */}
       <div className="hidden md:flex min-h-screen">
-        {/* Story Viewer Panel */}
-        <div className="w-1/3 relative overflow-hidden">
+        {/* Story Viewer Panel - 9:16 aspect ratio */}
+        <div 
+          className="flex justify-center items-center bg-black"
+          style={{ 
+            width: `${Math.min(50, 100 * (9/16) * (window.innerHeight / window.innerWidth))}%`,
+            minWidth: '300px'
+          }}
+        >
           <div 
-            className="relative h-screen"
+            className="relative bg-black"
+            style={{ 
+              aspectRatio: '9/16',
+              width: '100%',
+              height: '100vh'
+            }}
             {...desktopSwipeHandlers}
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
@@ -330,7 +341,9 @@ export const TwoPanelStoryViewer = ({
         </div>
 
         {/* Metadata Panel with Close Button */}
-        <div className="w-1/3 bg-white relative">
+        <div className={`bg-white relative transition-all duration-300 ${
+          isRightPanelCollapsed ? 'flex-1' : 'w-1/3'
+        }`}>
           {/* Close Button */}
           {onClose && (
             <button
@@ -349,9 +362,13 @@ export const TwoPanelStoryViewer = ({
         </div>
 
         {/* Right Panel - Collapsible */}
-        <div className={`w-1/3 bg-white relative transition-all duration-300 overflow-hidden`}>
-          {/* Panel Content or White Background */}
-          <div className={`h-full transition-transform duration-300 ${isRightPanelCollapsed ? 'transform translate-x-full' : 'transform translate-x-0'}`}>
+        <div className={`bg-white relative transition-all duration-300 overflow-hidden ${
+          isRightPanelCollapsed ? 'w-12' : 'w-1/3'
+        }`}>
+          {/* Panel Content */}
+          <div className={`h-full transition-transform duration-300 ${
+            isRightPanelCollapsed ? 'transform -translate-x-full' : 'transform translate-x-0'
+          }`}>
             {/* Collapse Button */}
             <button
               onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
@@ -369,11 +386,6 @@ export const TwoPanelStoryViewer = ({
               )}
             </div>
           </div>
-          
-          {/* White background when collapsed */}
-          {isRightPanelCollapsed && (
-            <div className="absolute inset-0 bg-white" />
-          )}
         </div>
 
         {/* Reopen Button - appears when right panel is collapsed */}
