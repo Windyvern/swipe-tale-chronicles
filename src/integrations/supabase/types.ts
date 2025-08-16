@@ -7,114 +7,14 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
-      stories: {
-        Row: {
-          address: string | null
-          author: string
-          created_at: string
-          description: string | null
-          handle: string | null
-          id: string
-          latitude: number | null
-          longitude: number | null
-          published_at: string
-          subtitle: string | null
-          tags: string[] | null
-          thumbnail: string | null
-          thumbnail_panel_id: string | null
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          address?: string | null
-          author: string
-          created_at?: string
-          description?: string | null
-          handle?: string | null
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          published_at?: string
-          subtitle?: string | null
-          tags?: string[] | null
-          thumbnail?: string | null
-          thumbnail_panel_id?: string | null
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          author?: string
-          created_at?: string
-          description?: string | null
-          handle?: string | null
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          published_at?: string
-          subtitle?: string | null
-          tags?: string[] | null
-          thumbnail?: string | null
-          thumbnail_panel_id?: string | null
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      story_panels: {
-        Row: {
-          content: string | null
-          created_at: string
-          duration: number | null
-          id: string
-          media: string | null
-          order_index: number
-          story_id: string
-          title: string | null
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          duration?: number | null
-          id?: string
-          media?: string | null
-          order_index: number
-          story_id: string
-          title?: string | null
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          duration?: number | null
-          id?: string
-          media?: string | null
-          order_index?: number
-          story_id?: string
-          title?: string | null
-          type?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "story_panels_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
